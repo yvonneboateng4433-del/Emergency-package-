@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emergency Package 💌</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Caveat:wght@600;700&family=Courier+Prime:wght@400;700&family=Poppins:wght@300;400;500&display=swap');
+
+  :root{
+    --cream: #FFF6F1;
+    --blush: #FBD8DE;
+    --berry: #B23A5C;
+    --berry-dark: #7A2340;
+    --mint: #CFEAD9;
+    --ink: #4A2E33;
+    --paper: #FFFDF9;
+  }
+
+  *{ box-sizing: border-box; margin:0; padding:0; }
+
+  html,body{
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 20% 10%, #FFE3E9 0%, transparent 45%),
+      radial-gradient(circle at 85% 85%, #FDEFE0 0%, transparent 50%),
+      linear-gradient(160deg, var(--cream) 0%, var(--blush) 100%);
+    font-family: 'Poppins', sans-serif;
+    color: var(--ink);
+    overflow-x: hidden;
+  }
+
+  /* floating ambient hearts */
+  .floaters{
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  }
+  .floaters span{
+    position: absolute;
+    bottom: -10%;
+    font-size: 1.4rem;
+    opacity: 0.35;
+    animation: rise linear infinite;
+  }
+  @keyframes rise{
+    to{ transform: translateY(-115vh) rotate(20deg); opacity: 0; }
+  }
+
+  .stage{
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 6vh 6vw;
+    text-align: center;
+  }
+
+  /* ---- Envelope / package intro ---- */
+  #intro{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.6rem;
+  }
+
+  .parcel{
+    width: min(320px, 78vw);
+    aspect-ratio: 1.5 / 1;
+    position: relative;
+    cursor: pointer;
+    animation: bob 3.4s ease-in-out infinite;
+  }
+  @keyframes bob{
+    0%,100%{ transform: translateY(0) rotate(-1deg); }
+    50%{ transform: translateY(-8px) rotate(1deg); }
+  }
+
+  .box-body{
+    position:absolute; inset:0;
+    background: linear-gradient(155deg, #F6C9D0, #E8A9BA);
+    border-radius: 10px;
+    box-shadow: 0 18px 34px -14px rgba(122,35,64,0.45);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .box-tape-v{
+    position:absolute; top:0; bottom:0; left:50%;
+    width: 26px; margin-left:-13px;
+    background: repeating-linear-gradient(135deg, var(--berry) 0 8px, var(--berry-dark) 8px 16px);
+    opacity:0.85;
+  }
+  .box-tape-h{
+    position:absolute; left:0; right:0; top:50%;
+    height: 26px; margin-top:-13px;
+    background: repeating-linear-gradient(135deg, var(--berry) 0 8px, var(--berry-dark) 8px 16px);
+    opacity:0.85;
+  }
+  .seal{
+    position:relative; z-index:2;
+    width: 64px; height:64px; border-radius:50%;
+    background: radial-gradient(circle at 35% 30%, #E7607F, var(--berry-dark));
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; font-size:1.6rem;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.25), inset 0 -3px 6px rgba(0,0,0,0.25);
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{ transform: scale(1); }
+    50%{ transform: scale(1.08); }
+  }
+
+  .stamp-label{
+    font-family:'Courier Prime', monospace;
+    letter-spacing: 0.12em;
+    font-size: 0.72rem;
+    color: var(--berry-dark);
+    background: var(--paper);
+    padding: 5px 10px;
+    border: 1.5px dashed var(--berry);
+    border-radius: 4px;
+  }
+
+  .tap-hint{
+    font-size: 0.85rem;
+    color: var(--berry-dark);
+    opacity: 0.75;
+    font-style: italic;
+  }
+
+  /* ---- Message reveal ---- */
+  #message{
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.4rem;
+    max-width: 560px;
+    animation: fadeUp 0.9s ease forwards;
+  }
+  #message.show{ display:flex; }
+
+  @keyframes fadeUp{
+    from{ opacity:0; transform: translateY(24px); }
+    to{ opacity:1; transform: translateY(0); }
+  }
+
+  .eyebrow{
+    font-family:'Courier Prime', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--berry-dark);
+    opacity: 0.75;
+  }
+
+  h1{
+    font-family:'Playfair Display', serif;
+    font-weight: 700;
+    font-size: clamp(1.5rem, 5.2vw, 2.3rem);
+    line-height: 1.35;
+    color: var(--berry-dark);
+  }
+
+  .contents{
+    display:flex;
+    gap: clamp(1rem, 6vw, 2.2rem);
+    align-items:center;
+    justify-content:center;
+    margin: 0.4rem 0 0.2rem;
+  }
+  .contents .item{
+    display:flex; flex-direction:column; align-items:center; gap:0.35rem;
+  }
+  .contents .emoji{
+    font-size: clamp(2.4rem, 9vw, 3.4rem);
+    display:inline-block;
+    animation: wiggle 2.6s ease-in-out infinite;
+  }
+  .contents .item:nth-child(2) .emoji{ animation-delay: 0.2s; }
+  .contents .item:nth-child(3) .emoji{ animation-delay: 0.4s; }
+  @keyframes wiggle{
+    0%,100%{ transform: rotate(-6deg) scale(1); }
+    50%{ transform: rotate(6deg) scale(1.08); }
+  }
+  .contents small{
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--berry-dark);
+    opacity: 0.7;
+    font-family:'Courier Prime', monospace;
+  }
+
+  .reveal-btn{
+    margin-top: 0.6rem;
+    font-family: 'Caveat', cursive;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--paper);
+    background: linear-gradient(135deg, var(--berry), var(--berry-dark));
+    border: none;
+    padding: 0.55rem 1.8rem;
+    border-radius: 40px;
+    cursor: pointer;
+    box-shadow: 0 12px 22px -10px rgba(122,35,64,0.6);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .reveal-btn:hover{
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 16px 26px -10px rgba(122,35,64,0.7);
+  }
+  .reveal-btn:focus-visible{
+    outline: 3px solid var(--berry-dark);
+    outline-offset: 3px;
+  }
+  .reveal-btn:active{ transform: translateY(0) scale(0.98); }
+
+  /* ---- Prescription slip (joke) ---- */
+  #slip{
+    display:none;
+    margin-top: 1.6rem;
+    width: min(420px, 88vw);
+    background: var(--paper);
+    border-radius: 10px;
+    padding: 1.6rem 1.5rem 1.8rem;
+    text-align: left;
+    position: relative;
+    box-shadow: 0 24px 40px -18px rgba(74,46,51,0.35);
+    border: 1px solid #f0d9df;
+  }
+  #slip.show{
+    display:block;
+    animation: unfurl 0.6s cubic-bezier(.2,.9,.3,1.2) forwards;
+    transform-origin: top center;
+  }
+  @keyframes unfurl{
+    from{ opacity:0; transform: scaleY(0.4) translateY(-10px); }
+    to{ opacity:1; transform: scaleY(1) translateY(0); }
+  }
+  #slip::before{
+    content:"";
+    position:absolute; top:0; left:0; right:0; height:4px;
+    background: repeating-linear-gradient(90deg, var(--blush) 0 8px, transparent 8px 14px);
+  }
+  .slip-head{
+    display:flex; align-items:center; justify-content:space-between;
+    border-bottom: 1.5px dashed var(--berry);
+    padding-bottom: 0.7rem;
+    margin-bottom: 0.9rem;
+  }
+  .slip-head .rx{
+    font-family:'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight:700;
+    color: var(--berry-dark);
+  }
+  .slip-head .cross{
+    color: var(--berry);
+    font-size: 1.3rem;
+  }
+  .slip-body p{
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.92rem;
+    line-height: 1.7;
+    color: var(--ink);
+    margin-bottom: 0.7rem;
+  }
+  .slip-body .label{
+    font-weight:700;
+    color: var(--berry-dark);
+  }
+  .slip-foot{
+    margin-top: 1rem;
+    font-family:'Caveat', cursive;
+    font-size: 1.3rem;
+    color: var(--berry-dark);
+    text-align: right;
+  }
+
+  .postscript{
+    margin-top: 1.6rem;
+    font-family:'Caveat', cursive;
+    font-size: 1.3rem;
+    color: var(--berry-dark);
+    opacity: 0;
+    animation: fadeIn 1s ease forwards 0.4s;
+  }
+  #slip.show ~ .postscript{ opacity: 1; }
+
+  @keyframes fadeIn{ to{ opacity: 1; } }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="floaters" id="floaters" aria-hidden="true"></div>
+
+<div class="stage">
+
+  <!-- Envelope / package intro -->
+  <div id="intro">
+    <div class="stamp-label">SPECIAL DELIVERY · HANDLE WITH CARE</div>
+    <div class="parcel" id="parcel" role="button" tabindex="0" aria-label="Open your package">
+      <div class="box-body">
+        <div class="box-tape-v"></div>
+        <div class="box-tape-h"></div>
+        <div class="seal">💌</div>
+      </div>
+    </div>
+    <div class="tap-hint">tap the package to open it</div>
+  </div>
+
+  <!-- Message reveal -->
+  <div id="message">
+    <div class="eyebrow">Incoming Transmission</div>
+    <h1>I'm sending you an emergency package:<br>one hug, two kisses, and a very questionable joke.<br>Handle with care!</h1>
+
+    <div class="contents">
+      <div class="item"><span class="emoji">🤗</span><small>1 hug</small></div>
+      <div class="item"><span class="emoji">💋💋</span><small>2 kisses</small></div>
+      <div class="item"><span class="emoji">🤭</span><small>1 dubious joke</small></div>
+    </div>
+
+    <button class="reveal-btn" id="revealBtn">unfold the prescription →</button>
+
+    <div id="slip">
+      <div class="slip-head">
+        <span class="rx">℞ Doctor's Report</span>
+        <span class="cross">✚</span>
+      </div>
+      <div class="slip-body">
+        <p><span class="label">Diagnosis:</span> Your heart is heavy because it's full of feelings.</p>
+        <p><span class="label">Treatment plan:</span> hugs, kisses, whatever you need, and being reminded you're awesome.</p>
+        <p><span class="label">Side effects:</span> include me bothering you 🤭. Handle with care!</p>
+      </div>
+      <div class="slip-foot">— Now please smile. Doctor's orders. 🩺💗</div>
+    </div>
+
+    <div id="note">
+      <p>I'm sorry today was hard. I hope you're being gentle with yourself. Honestly I'm proud of you for trying, and I'm available anytime, I'm here with you ❤️</p>
+      <p class="note-signoff">I love you Kwabena ❤️🫂</p>
+    </div>
+
+    <div class="postscript">with all my love, always ✨</div>
+  </div>
+
+</div>
+
+<script>
+  // ambient floating hearts
+  const floaters = document.getElementById('floaters');
+  const symbols = ['💗','💕','✨','💋','🤍'];
+  for(let i=0;i<14;i++){
+    const s = document.createElement('span');
+    s.textContent = symbols[Math.floor(Math.random()*symbols.length)];
+    s.style.left = Math.random()*100 + 'vw';
+    s.style.animationDuration = (9 + Math.random()*10) + 's';
+    s.style.animationDelay = (Math.random()*10) + 's';
+    s.style.fontSize = (1 + Math.random()*1.2) + 'rem';
+    floaters.appendChild(s);
+  }
+
+  const parcel = document.getElementById('parcel');
+  const intro = document.getElementById('intro');
+  const message = document.getElementById('message');
+
+  function openParcel(){
+    intro.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    intro.style.opacity = '0';
+    intro.style.transform = 'scale(0.9)';
+    setTimeout(()=>{
+      intro.style.display = 'none';
+      message.classList.add('show');
+    }, 450);
+  }
+
+  parcel.addEventListener('click', openParcel);
+  parcel.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openParcel(); }
+  });
+
+  const revealBtn = document.getElementById('revealBtn');
+  const slip = document.getElementById('slip');
+  revealBtn.addEventListener('click', ()=>{
+    slip.classList.add('show');
+    revealBtn.style.display = 'none';
+  });
+</script>
+
+</body>
+</html>
